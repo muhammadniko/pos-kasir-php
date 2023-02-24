@@ -62,11 +62,21 @@ if (!empty($_SESSION['admin'])) {
             $data1[] = $total;
             $data1[] = $tgl;
 
-            $sql1 = 'INSERT INTO penjualan (id_barang,id_member,jumlah,total,tanggal_input) VALUES (?,?,?,?,?)';
-            $row1 = $config -> prepare($sql1);
-            $row1 -> execute($data1);
+            $cek_keranjang = 'SELECT * FROM penjualan WHERE id_barang = ?';
+            $row_keranjang = $config -> prepare($cek_keranjang);
+            $row_keranjang->execute(array($id));
+            $result_cek_keranjang= $row_keranjang->rowCount();
 
-            echo '<script>window.location="../../index.php?page=jual&success=tambah-data"</script>';
+            if ($result_cek_keranjang > 0) {
+                echo '<script>alert("Barang sudah ada");
+                window.location="../../index.php?page=jual#keranjang"</script>';
+            } else {
+                $sql1 = 'INSERT INTO penjualan (id_barang,id_member,jumlah,total,tanggal_input) VALUES (?,?,?,?,?)';
+                $row1 = $config -> prepare($sql1);
+                $row1 -> execute($data1);
+
+                echo '<script>window.location="../../index.php?page=jual&success=tambah-data"</script>';
+            }
         } else {
             echo '<script>alert("Stok Barang Anda Telah Habis !");
 					window.location="../../index.php?page=jual#keranjang"</script>';
